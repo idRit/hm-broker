@@ -24,7 +24,7 @@ const handler = async (packet) => {
     
     switch (packet.scene) {
         case 0:
-            const dst = await getDst();
+            const dst = await getDst(packet.config);
             const memQueue = getQueue(dst);
             
             memQueue.enqueue(packet.command);
