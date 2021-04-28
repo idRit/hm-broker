@@ -43,7 +43,7 @@ const handler = async (packet) => {
             break;
 
         case 1:
-            const commands = getCommands(packet.src, packet.multi);
+            const commands = getCommands(packet.src);
 
             let timeStamp = await syncOperation(packet.sync);
             
@@ -73,7 +73,7 @@ const getQueue = (dst) => {
     return new memoryQueue().setState(result.q, result.t, result.h);
 }
 
-const getCommands = (src, multi) => {
+const getCommands = (src, multi = false) => {
     let result = queueSet.where(obj => obj.dst === src)[0];
     let memQueue = new memoryQueue().setState(result.q, result.t, result.h);
 
