@@ -2,8 +2,8 @@ const net = require("net");
 
 const server = net.createServer();
 
-server.on('connection', socket => {
-    let dataHandler = require('./data.handler')(socket);
+server.on('connection', async socket => {
+    let dataHandler = await require('./data.handler')(socket);
     socket.on('data', dataHandler);
 
     socket.on('close', () => {

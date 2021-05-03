@@ -4,7 +4,7 @@ const syncOperation = require('./sync.operation');
 const memoryQueue = require('./queue.operation');
 const { route } = require('./neural.switch');
 
-let skt;
+let skt, timeStamp;
 
 const db = new loki('memdb');
 const queueSet = db.addCollection('queue', { indices: ['dst'] });
@@ -20,11 +20,9 @@ const callback = async (data) => {
 }
 
 const handler = async (packet) => {
-    console.log(packet);
-    
     switch (packet.scene) {
         case 0:
-            const dst = await getDst(packet.config);
+            const dst = await getDst(packet.sync);
             const memQueue = getQueue(dst);
             
             memQueue.enqueue(packet.command);
@@ -35,7 +33,7 @@ const handler = async (packet) => {
                 t: memQueue.tail
             });
 
-            let timeStamp = await syncOperation(packet.sync);
+            timeStamp = await syncOperation(packet.sync);
             
             skt.write(JSON.stringify({ timeStamp }));
             skt.end();
@@ -43,9 +41,9 @@ const handler = async (packet) => {
             break;
 
         case 1:
-            const commands = getCommands(packet.src);
+            const commands = getCommands(packet.sync.src);
 
-            let timeStamp = await syncOperation(packet.sync);
+            timeStamp = await syncOperation(packet.sync);
             
             skt.write(JSON.stringify({ timeStamp, commands }));
             skt.end();
@@ -53,7 +51,8 @@ const handler = async (packet) => {
             break;
 
         default:
-            let timeStamp = await syncOperation(packet.sync);
+            timeStamp = await syncOperation(packet.sync);
+            console.log(timeStamp);
             
             skt.write(JSON.stringify({ timeStamp }));
             skt.end();
@@ -105,10 +104,14 @@ const getCommands = (src, multi = false) => {
 
     return {
         command,
-        commandsLeft: memQueue.getState().length
+        commandsLeft: memQueue.getState() ? memQueue.getState().length - 1 : 0,
     };
 }
 
 const setQueue = (obj) => {
-    queueSet.update(obj);
+    try {
+        queueSet.update(obj);
+    } catch (error) {
+        queueSet.insert(obj);
+    }
 }

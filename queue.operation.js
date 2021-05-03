@@ -15,9 +15,9 @@ class Queue {
         if (this.tail <= this.head) {
             let returnObj = this.queue[this.tail];
             this.tail += 1;
+            if (this.tail > this.head) this.setState([], 0, -1);
             return returnObj;
         }
-        this.setState([], 0, -1);
         return false;
     }
 
@@ -33,8 +33,9 @@ class Queue {
 
     setState(q, t, h) {
         this.head = h;
-        this.queue = q;
+        this.queue = q == null ? [] : q;
         this.tail = t;
+        return this;
     }
 }
 
