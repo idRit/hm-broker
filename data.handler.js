@@ -26,6 +26,9 @@ const handler = async (packet) => {
             const dst = await getDst(packet.sync);
             const memQueue = getQueue(dst);
 
+            if (packet.nl)
+                packet.command = await interpreter(packet.command);
+
             memQueue.enqueue(packet.command);
             setQueue({
                 dst,
@@ -47,27 +50,6 @@ const handler = async (packet) => {
             timeStamp = await syncOperation(packet.sync);
 
             skt.write(JSON.stringify({ timeStamp, commands }));
-            skt.end();
-
-            break;
-
-        case 2:
-            const dst = await getDst(packet.sync);
-            const memQueue = getQueue(dst);
-
-            let command = await interpreter(packet.command);
-
-            memQueue.enqueue(command);
-            setQueue({
-                dst,
-                q: memQueue.getState(),
-                h: memQueue.head,
-                t: memQueue.tail
-            });
-
-            timeStamp = await syncOperation(packet.sync);
-
-            skt.write(JSON.stringify({ timeStamp }));
             skt.end();
 
             break;

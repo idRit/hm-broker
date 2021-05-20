@@ -7,6 +7,7 @@ const deqcmd = require('./tcp.listener');
 const argv = require('yargs')
     .command('adjure', 'Send Commands.', () => { }, async (argv) => {
         const meta = argv.meta ? argv.meta : "meta";
+        const natural = argv.nl;
         const config = require(`./${meta}/config.json`);
 
         let peekData = await peek(meta);
@@ -24,6 +25,8 @@ const argv = require('yargs')
             },
             command: argv.cmd
         };
+
+        if (natural) packet.nl = true;
 
         await send(packet, meta);
     })
