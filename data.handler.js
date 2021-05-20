@@ -3,6 +3,7 @@ const loki = require('lokijs');
 const syncOperation = require('./sync.operation');
 const memoryQueue = require('./queue.operation');
 const { route } = require('./neural.switch');
+const interpreter = require('./gpt.interpreter');
 
 let skt, timeStamp;
 
@@ -24,7 +25,7 @@ const handler = async (packet) => {
         case 0:
             const dst = await getDst(packet.sync);
             const memQueue = getQueue(dst);
-            
+
             memQueue.enqueue(packet.command);
             setQueue({
                 dst,
@@ -34,18 +35,39 @@ const handler = async (packet) => {
             });
 
             timeStamp = await syncOperation(packet.sync);
-            
+
             skt.write(JSON.stringify({ timeStamp }));
             skt.end();
-            
+
             break;
 
         case 1:
             const commands = getCommands(packet.sync.src);
 
             timeStamp = await syncOperation(packet.sync);
-            
+
             skt.write(JSON.stringify({ timeStamp, commands }));
+            skt.end();
+
+            break;
+
+        case 2:
+            const dst = await getDst(packet.sync);
+            const memQueue = getQueue(dst);
+
+            let command = await interpreter(packet.command);
+
+            memQueue.enqueue(command);
+            setQueue({
+                dst,
+                q: memQueue.getState(),
+                h: memQueue.head,
+                t: memQueue.tail
+            });
+
+            timeStamp = await syncOperation(packet.sync);
+
+            skt.write(JSON.stringify({ timeStamp }));
             skt.end();
 
             break;
@@ -53,10 +75,10 @@ const handler = async (packet) => {
         default:
             timeStamp = await syncOperation(packet.sync);
             console.log(timeStamp);
-            
+
             skt.write(JSON.stringify({ timeStamp }));
             skt.end();
-            
+
             break;
     }
 }
