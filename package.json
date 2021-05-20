@@ -13,6 +13,8 @@
     "@tensorflow/tfjs": "^3.4.0",
     "@tensorflow/tfjs-node": "^3.4.0",
     "csvtojson": "^2.0.10",
-    "lokijs": "^1.5.12"
+    "dotenv": "^9.0.2",
+    "lokijs": "^1.5.12",
+    "node-fetch": "^2.6.1"
   }
 }
