@@ -23,10 +23,7 @@ class Queue {
 
     getState() {
         if (this.tail <= this.head) {
-            let returnObj = [];
-            for (let i = this.tail; i <= this.head; i++) 
-                returnObj.push(this.queue[i])
-            return returnObj;
+            return this.queue;
         }
         return null;
     }
@@ -38,5 +35,27 @@ class Queue {
         return this;
     }
 }
+
+const run = () => {
+    let q = new Queue();
+
+    q.enqueue(1);
+    q.enqueue(2);
+    q.enqueue(3);
+
+    console.log(q.dequeue());
+    console.log(q.dequeue());
+    
+    console.log("init state: ", q.getState());
+    let q2 = new Queue().setState(q.queue, q.tail, q.head);
+    console.log(q2);
+    console.log(q2.dequeue());
+    console.log(q.dequeue());
+
+    console.log(q);
+    console.log(q2);
+}
+
+// run();
 
 module.exports = Queue;

@@ -32,6 +32,7 @@ const argv = require('yargs')
     })
     .command('heed', 'Listen for Incomming Commands.', () => { }, async argv => {
         const meta = argv.meta ? argv.meta : "meta";
+        const x = argv.x;
         const config = require(`./${meta}/config.json`);
         
         let packet = {
@@ -41,7 +42,7 @@ const argv = require('yargs')
             }
         };
 
-        await deqcmd(packet, meta);
+        await deqcmd(packet, meta, x);
     })
     .command('recog', 'Synchronise with Broker.', () => { }, async argv => {
         const meta = argv.meta ? argv.meta : "meta";

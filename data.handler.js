@@ -47,7 +47,7 @@ const handler = async (packet) => {
         case 1:
             const commands = getCommands(packet.sync.src);
 
-            timeStamp = await syncOperation(packet.sync);
+            timeStamp = await syncOperation(packet.sync, packet.bypass);
 
             skt.write(JSON.stringify({ timeStamp, commands }));
             skt.end();
@@ -108,7 +108,7 @@ const getCommands = (src, multi = false) => {
 
     return {
         command,
-        commandsLeft: memQueue.getState() ? memQueue.getState().length - 1 : 0,
+        commandsLeft: memQueue.getState() ? (memQueue.head - memQueue.tail) + 1 : 0,
     };
 }
 
