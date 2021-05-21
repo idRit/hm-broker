@@ -10,20 +10,20 @@ module.exports = async (packet, meta, x) => {
 
     client.on('data', async data => {
         jsonData = JSON.parse(data.toString());
-        console.log("ENQED:" + jsonData.commands.commandsLeft);
-        if (jsonData.commands.commandsLeft > 0) {
+        console.log("ENQED: " + jsonData.commands.commandsLeft);
+        if (jsonData.commands.commandsLeft >= 0 && jsonData.commands.command) {
             fs.appendFileSync(`${__dirname}/${meta}/cmds.sh`, jsonData.commands.command + "\n");
             sync(jsonData.timeStamp, meta);
         }
-        console.log("TS:" + jsonData.timeStamp);
+        console.log("TS: " + jsonData.timeStamp);
+        console.log("DQED: " + jsonData.commands.command);
     });
 
     client.on('end', async () => {
         let commands = fs.readFileSync(__dirname + `/${meta}/cmds.sh`);
         commands = commands.toString().split("\n");
         let command = commands[commands.length - 2];
-        
         if (command && x) commander.execute(command);
-        else console.log("DQED: ", command);
+        else if (x) console.log("Cannot execute, no immidiate command found!");
     });
 }

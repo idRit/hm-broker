@@ -3,15 +3,18 @@ class Queue {
         this.queue = [];
         this.head = -1;
         this.tail = 0;
+        console.log("QUEUE constructed!");
     }
 
     enqueue(obj) {
         this.head += 1;
         this.queue[this.head] = obj;
+        console.log("ENQUEUED!");
         return true;
     }
 
     dequeue() {
+        console.log("DEQUEUE");
         if (this.tail <= this.head) {
             let returnObj = this.queue[this.tail];
             this.tail += 1;
@@ -22,6 +25,7 @@ class Queue {
     }
 
     getState() {
+        console.log("STATE RETURNED!");
         if (this.tail <= this.head) {
             return this.queue;
         }
@@ -29,33 +33,12 @@ class Queue {
     }
 
     setState(q, t, h) {
+        console.log("QUEUE INIT!");
         this.head = h;
         this.queue = q == null ? [] : q;
         this.tail = t;
         return this;
     }
 }
-
-const run = () => {
-    let q = new Queue();
-
-    q.enqueue(1);
-    q.enqueue(2);
-    q.enqueue(3);
-
-    console.log(q.dequeue());
-    console.log(q.dequeue());
-    
-    console.log("init state: ", q.getState());
-    let q2 = new Queue().setState(q.queue, q.tail, q.head);
-    console.log(q2);
-    console.log(q2.dequeue());
-    console.log(q.dequeue());
-
-    console.log(q);
-    console.log(q2);
-}
-
-// run();
 
 module.exports = Queue;
